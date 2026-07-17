@@ -37,10 +37,10 @@ jobs:
 
       - name: Prepare Helm chart
         if: ${{ !inputs.dry_run }}
-        run: scripts/prepare_chart_for_release.sh
-        env:
-          CHART_PATH: chart/apl-test
-          RELEASE_TAG: ${{ inputs.release_tag }}
+        uses: linode/apl-gh-actions/actions/release-prepare-chart-for-release@main
+        with:
+          chart_path: chart/apl-test
+          release_tag: ${{ inputs.release_tag }}
 
       - name: Publish Helm chart
         if: ${{ !inputs.dry_run }}

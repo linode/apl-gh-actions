@@ -6,6 +6,7 @@ const actions = [
   'release-create-branch',
   'release-compute-tag',
   'release-check-tag-not-exists',
+  'release-prepare-chart-for-release',
   'release-tag',
   'release-create-github-release',
   'release-check-versions-yaml',

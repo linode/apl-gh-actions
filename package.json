@@ -40,6 +40,7 @@
     "build:actions": "node scripts/build-actions.mjs",
     "update-helm-chart-deps": "node src/update-helm-chart-deps.mjs",
     "check-schema-versions": "node src/check-schema-version.mjs",
+    "release:prepare-chart-for-release": "tsx src/prepare_chart_for_release.ts",
     "test": "jest",
     "release:configure-git": "tsx src/release/configure-git.ts",
     "release:derive-release-branch": "tsx src/release/derive-release-branch.ts",

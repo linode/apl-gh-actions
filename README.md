@@ -173,6 +173,22 @@ Creates a GitHub release using `gh release create --generate-notes`. Uses the pr
 
 ---
 
+### `release:prepare-chart-for-release`
+
+Prepares Helm chart files for a release tag:
+
+- Updates `Chart.yaml` placeholders:
+  - `0.0.0-chart-version` -> `<release-version>` derived from `RELEASE_TAG` via `semver.coerce`
+  - `APP_VERSION_PLACEHOLDER` -> exact `RELEASE_TAG` input value
+- Generates `values.schema.json` from `values-schema.yaml`
+
+| Variable | Default | Description |
+|---|---|---|
+| `RELEASE_TAG` | — | Release tag to apply (for example `v6.0.0-rc.9`) |
+| `CHART_PATH` | `chart/apl` | Chart directory containing `Chart.yaml` |
+
+---
+
 ### `release:docker-push`
 
 Tags a locally-cached Docker image and pushes it to Docker Hub under `<DOCKER_REPO>:<RELEASE_TAG>`. Also pushes `:<latest>` when the tag is the highest stable release across all tags in the repository.
