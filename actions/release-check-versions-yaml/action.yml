@@ -1,0 +1,15 @@
+name: Release Check Versions YAML
+description: Validate versions.yaml semver values and referenced artifacts.
+inputs:
+  is_prerelease:
+    description: Set true to allow RC versions.
+    required: true
+  repo_root:
+    description: Repository root containing versions.yaml.
+    required: false
+  github_token:
+    description: GitHub token used by gh CLI.
+    required: false
+runs:
+  using: node24
+  main: dist/index.js

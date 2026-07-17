@@ -53,15 +53,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      - name: Install CI dependencies
-        working-directory: ci
-        run: npm ci
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -85,11 +76,10 @@ jobs:
           git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Create and push git tag
-        working-directory: ci
-        run: npm run release:tag-release
-        env:
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          DRY_RUN: ${{ inputs.dry_run }}
+        uses: linode/apl-gh-actions/actions/release-tag@main
+        with:
+          release_tag: ${{ inputs.release_tag }}
+          dry_run: ${{ inputs.dry_run }}
 
       # - name: Login to Docker Hub
       #   if: ${{ !inputs.dry_run }}
@@ -99,7 +89,7 @@ jobs:
       #     password: ${{ env.OCI_PASSWORD }}
 
       # - name: Push Docker image with release tag
-      #   working-directory: ci
+      #   working-directory: .
       #   run: npm run release:docker-push
       #   env:
       #     RELEASE_TAG: ${{ inputs.release_tag }}
@@ -108,10 +98,9 @@ jobs:
       #     DRY_RUN: ${{ inputs.dry_run }}
 
       - name: Create GitHub Release
-        working-directory: ci
-        run: npm run release:create-github-release
-        env:
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          IS_PRERELEASE: ${{ inputs.is_prerelease }}
-          DRY_RUN: ${{ inputs.dry_run }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: linode/apl-gh-actions/actions/release-create-github-release@main
+        with:
+          release_tag: ${{ inputs.release_tag }}
+          is_prerelease: ${{ inputs.is_prerelease }}
+          dry_run: ${{ inputs.dry_run }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

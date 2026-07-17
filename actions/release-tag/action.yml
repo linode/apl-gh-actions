@@ -1,0 +1,13 @@
+name: Release Tag
+description: Create and push an annotated git tag.
+inputs:
+  release_tag:
+    description: Tag to create.
+    required: true
+  dry_run:
+    description: Set true to skip writes.
+    required: false
+    default: 'false'
+runs:
+  using: node24
+  main: dist/index.js
