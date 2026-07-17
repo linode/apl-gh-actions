@@ -1,0 +1,9 @@
+name: Release Create Branch
+description: Create a local git branch for a release.
+inputs:
+  release_branch:
+    description: Release branch name to create.
+    required: true
+runs:
+  using: node24
+  main: dist/index.js

@@ -1,0 +1,20 @@
+name: Release Create GitHub Release
+description: Create a GitHub release from an existing git tag.
+inputs:
+  release_tag:
+    description: Tag to publish.
+    required: true
+  is_prerelease:
+    description: Set true to mark release as prerelease.
+    required: false
+    default: 'false'
+  dry_run:
+    description: Set true to skip writes.
+    required: false
+    default: 'false'
+  github_token:
+    description: GitHub token used by gh CLI.
+    required: false
+runs:
+  using: node24
+  main: dist/index.js

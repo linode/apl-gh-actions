@@ -35,18 +35,9 @@ jobs:
           ref: ${{ inputs.release_tag }}
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      - name: Install CI dependencies
-        working-directory: ci
-        run: npm ci
-
       - name: Prepare Helm chart
         if: ${{ !inputs.dry_run }}
-        run: ci/scripts/prepare_chart_for_release.sh
+        run: scripts/prepare_chart_for_release.sh
         env:
           CHART_PATH: chart/apl-test
           RELEASE_TAG: ${{ inputs.release_tag }}

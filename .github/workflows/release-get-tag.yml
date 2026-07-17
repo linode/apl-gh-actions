@@ -39,15 +39,6 @@ jobs:
           ref: ${{ inputs.release_branch }}
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      - name: Install CI dependencies
-        working-directory: ci
-        run: npm ci
-
       - name: Validate release branch
         run: |
           if [[ "$RELEASE_BRANCH" != $RELEASE_BRANCH_PREFIX* ]]; then
@@ -60,16 +51,14 @@ jobs:
 
       - name: Compute release tag
         id: compute-tag
-        working-directory: ci
-        run: npm run release:compute-tag
-        env:
-          IS_PRERELEASE: ${{ inputs.is_prerelease }}
-          RELEASE_BRANCH: ${{ inputs.release_branch }}
-          RELEASE_BRANCH_PREFIX: ${{ inputs.release_branch_prefix }}
-          RELEASE_TAG_PREFIX: ${{ inputs.release_tag_prefix }}
+        uses: linode/apl-gh-actions/actions/release-compute-tag@main
+        with:
+          is_prerelease: ${{ inputs.is_prerelease }}
+          release_branch: ${{ inputs.release_branch }}
+          release_branch_prefix: ${{ inputs.release_branch_prefix }}
+          release_tag_prefix: ${{ inputs.release_tag_prefix }}
 
       - name: Check tag does not already exist
-        working-directory: ci
-        run: npm run release:check-tag-not-exists
-        env:
-          RELEASE_TAG: ${{ steps.compute-tag.outputs.tag }}
+        uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@main
+        with:
+          release_tag: ${{ steps.compute-tag.outputs.tag }}

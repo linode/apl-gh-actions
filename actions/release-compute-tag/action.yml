@@ -1,0 +1,23 @@
+name: Release Compute Tag
+description: Compute the next prerelease or stable release tag.
+inputs:
+  is_prerelease:
+    description: Set true to compute an RC tag, false for stable promotion.
+    required: true
+  release_branch:
+    description: Release branch name.
+    required: true
+  release_branch_prefix:
+    description: Prefix required for release branches.
+    required: false
+    default: releases/
+  release_tag_prefix:
+    description: Prefix to add to computed tags.
+    required: false
+    default: v
+outputs:
+  tag:
+    description: Computed release tag.
+runs:
+  using: node24
+  main: dist/index.js

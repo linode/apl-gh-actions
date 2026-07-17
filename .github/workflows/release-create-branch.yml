@@ -41,26 +41,17 @@ jobs:
           token: ${{ env.GITHUB_TOKEN }}
 
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      - name: Install CI dependencies
-        working-directory: ci
-        run: npm ci
-
       - name: Derive release branch from highest stable tag
         id: derive-branch
-        working-directory: ci
-        run: npm run release:derive-release-branch
-        env:
-          BUMP_TYPE: ${{ inputs.bump_type }}
-          RELEASE_BRANCH_PREFIX: ${{ env.RELEASE_BRANCH_PREFIX }}
+        uses: linode/apl-gh-actions/actions/release-derive-branch@main
+        with:
+          bump_type: ${{ inputs.bump_type }}
+          release_branch_prefix: ${{ env.RELEASE_BRANCH_PREFIX }}
 
       - name: Check release branch does not already exist
-        working-directory: ci
-        run: npm run release:check-branch-not-exists
+        uses: linode/apl-gh-actions/actions/release-check-branch-not-exists@main
+        with:
+          release_branch: ${{ steps.derive-branch.outputs.branch }}
 
       - name: Configure git identity
         env:
@@ -71,9 +62,10 @@ jobs:
 
       - name: Create release branch
         if: ${{ inputs.dry_run == 'false' }}
-        working-directory: ci
-        run: npm run release:create-release-branch
+        uses: linode/apl-gh-actions/actions/release-create-branch@main
+        with:
+          release_branch: ${{ steps.derive-branch.outputs.branch }}
 
       - name: Push release branch
         if: ${{ inputs.dry_run == 'false' }}
-        run: git push origin "$RELEASE_BRANCH"
+        run: git push origin "${{ steps.derive-branch.outputs.branch }}"
