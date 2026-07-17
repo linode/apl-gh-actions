@@ -14,7 +14,7 @@ export function runCreateReleaseBranchFromEnv() {
   createReleaseBranch(process.env.RELEASE_BRANCH!)
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   try {
     runCreateReleaseBranchFromEnv()

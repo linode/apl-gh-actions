@@ -35,7 +35,7 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+  if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   main().catch((err) => { console.error(err.message); process.exit(1) })
 }

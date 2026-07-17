@@ -10,7 +10,7 @@ function main() {
   console.log(`Git identity configured.`)
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   main()
 }

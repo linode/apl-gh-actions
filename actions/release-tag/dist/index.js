@@ -20188,7 +20188,7 @@ function runTagReleaseFromEnv() {
   const dryRun = process.env.DRY_RUN === "true";
   tagRelease(releaseTag, dryRun);
 }
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   (0, import_dotenv.config)();
   try {
     runTagReleaseFromEnv();

@@ -45,7 +45,7 @@ export async function runCreateGithubReleaseFromEnv() {
   await createGithubRelease(tag, isPrerelease, dryRun)
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   runCreateGithubReleaseFromEnv().catch((err) => {
     console.error(err.message)

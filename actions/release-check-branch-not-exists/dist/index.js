@@ -20189,7 +20189,7 @@ function checkBranchNotExists(branch) {
 function runCheckBranchNotExistsFromEnv() {
   checkBranchNotExists(process.env.RELEASE_BRANCH);
 }
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   (0, import_dotenv.config)();
   try {
     runCheckBranchNotExistsFromEnv();

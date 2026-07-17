@@ -34,7 +34,7 @@ export function runComputeTagFromEnv(): string {
   return tag
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   try {
     runComputeTagFromEnv()

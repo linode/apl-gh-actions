@@ -22,7 +22,7 @@ export function runTagReleaseFromEnv() {
   tagRelease(releaseTag, dryRun)
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   try {
     runTagReleaseFromEnv()

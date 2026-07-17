@@ -25339,7 +25339,7 @@ function runCheckVersionsYamlFromEnv() {
   const stable = process.env.IS_PRERELEASE !== "true";
   checkVersionsYaml(repoRoot, stable);
 }
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   (0, import_dotenv.config)();
   try {
     runCheckVersionsYamlFromEnv();

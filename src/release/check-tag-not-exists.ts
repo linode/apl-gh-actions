@@ -24,7 +24,7 @@ export function runCheckTagNotExistsFromEnv() {
   checkTagNotExists(process.env.RELEASE_TAG!)
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   try {
     runCheckTagNotExistsFromEnv()

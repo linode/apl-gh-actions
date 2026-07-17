@@ -22216,7 +22216,7 @@ async function runCreateGithubReleaseFromEnv() {
   const dryRun = process.env.DRY_RUN === "true";
   await createGithubRelease(tag, isPrerelease, dryRun);
 }
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   (0, import_dotenv.config)();
   runCreateGithubReleaseFromEnv().catch((err) => {
     console.error(err.message);
