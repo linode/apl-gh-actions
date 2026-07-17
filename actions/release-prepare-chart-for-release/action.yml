@@ -1,0 +1,13 @@
+name: Release Prepare Chart For Release
+description: Update Helm chart files and generate values.schema.json for a release tag.
+inputs:
+  release_tag:
+    description: Release tag to apply (for example v6.0.0-rc.9).
+    required: true
+  chart_path:
+    description: Path to the chart directory containing Chart.yaml.
+    required: false
+    default: chart/apl
+runs:
+  using: node24
+  main: dist/index.js
