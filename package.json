@@ -30,6 +30,7 @@
   "homepage": "https://github.com/linode/apl-core#readme",
   "license": "Apache-2.0",
   "name": "apl-core-ci",
+  "packageManager": "npm@11.6.1",
   "private": true,
   "repository": {
     "type": "git",
