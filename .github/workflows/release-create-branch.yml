@@ -9,18 +9,17 @@ on:
         type: string
       base_branch:
         description: 'Branch to cut from'
-        required: true
+        required: false
         default: 'main'
         type: string
       release_branch_prefix:
         description: 'Prefix for release branches'
-        required: true
+        required: false
         default: 'releases/'
         type: string
       dry_run:
         description: 'Dry run — skip all writes (git push)'
         required: true
-        default: 'true'
         type: string
 
 env:
@@ -45,7 +44,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version-file: ci/.nvmrc
+          node-version: '24'
 
       - name: Install CI dependencies
         working-directory: ci
