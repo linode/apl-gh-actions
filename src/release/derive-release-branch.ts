@@ -38,7 +38,7 @@ export function runDeriveReleaseBranchFromEnv(): string {
   return branch
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
   config()
   try {
     runDeriveReleaseBranchFromEnv()
