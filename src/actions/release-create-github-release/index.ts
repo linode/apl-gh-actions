@@ -4,7 +4,7 @@ import { createGithubRelease } from '../../release/create-github-release'
 async function run() {
   const releaseTag = core.getInput('release_tag', { required: true })
   const isPrerelease = core.getInput('is_prerelease') === 'true'
-  const dryRun = core.getInput('dry_run') === 'true'
+  const dryRun = core.getBooleanInput('dry_run')
   const token = core.getInput('github_token')
 
   if (token) {

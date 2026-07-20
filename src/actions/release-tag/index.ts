@@ -3,7 +3,7 @@ import { tagRelease } from '../../release/tag-release'
 
 async function run() {
   const releaseTag = core.getInput('release_tag', { required: true })
-  const dryRun = core.getInput('dry_run') === 'true'
+  const dryRun = core.getBooleanInput('dry_run')
   tagRelease(releaseTag, dryRun)
 }
 

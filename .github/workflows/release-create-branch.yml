@@ -20,7 +20,7 @@ on:
       dry_run:
         description: 'Dry run — skip all writes (git push)'
         required: true
-        type: string
+        type: boolean
 
 env:
   RELEASE_BRANCH_PREFIX: ${{ inputs.release_branch_prefix }}
@@ -61,11 +61,11 @@ jobs:
           git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Create release branch
-        if: ${{ inputs.dry_run == 'false' }}
+        if: ${{ !inputs.dry_run }}
         uses: linode/apl-gh-actions/actions/release-create-branch@main
         with:
           release_branch: ${{ steps.derive-branch.outputs.branch }}
 
       - name: Push release branch
-        if: ${{ inputs.dry_run == 'false' }}
+        if: ${{ !inputs.dry_run }}
         run: git push origin "${{ steps.derive-branch.outputs.branch }}"
