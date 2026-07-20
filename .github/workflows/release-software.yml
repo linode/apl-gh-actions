@@ -92,7 +92,8 @@ jobs:
           username: ${{ env.OCI_USERNAME }}
           password: ${{ env.OCI_PASSWORD }}
 
-      - name: Run tests in Docker (test gate)
+      - name: Run tests in Docker (push gate)
+        if: ${{ !inputs.dry_run }}
         uses: docker/build-push-action@v7
         with:
           push: true
