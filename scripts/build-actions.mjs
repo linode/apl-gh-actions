@@ -4,7 +4,7 @@ const actions = [
   'release-derive-branch',
   'release-check-branch-not-exists',
   'release-create-branch',
-  'release-get-next-minor',
+  'release-get-next-minor-version',
   'release-compute-tag',
   'release-check-tag-not-exists',
   'release-prepare-chart-for-release',

@@ -9,9 +9,9 @@ async function run() {
 
   if (!highest) throw new Error('No valid SemVer tags found')
 
-  const minor = computeNextMinor(highest)
-  core.setOutput('minor', minor)
-  core.exportVariable('RELEASE_MINOR', minor)
+  const version = computeNextMinor(highest)
+  core.setOutput('version', version)
+  core.exportVariable('RELEASE_VERSION', version)
 }
 
 run().catch((error) => {
