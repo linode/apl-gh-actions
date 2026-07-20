@@ -355,9 +355,9 @@ describe('computeReleaseBranchName', () => {
 
 describe('computeNextMinor', () => {
   it.each([
-    ['v5.1.0', 'v5.2'],
-    ['v6.0.0-rc.8', 'v6.1'],
-    ['4.15.4', '4.16'],
+    ['v5.1.0', '5.2.0'],
+    ['v6.0.0-rc.8', '6.1.0'],
+    ['4.15.4', '4.16.0'],
   ])('computes the next minor after %s', (tag, expected) => {
     expect(computeNextMinor(tag)).toBe(expected)
   })

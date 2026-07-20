@@ -21814,8 +21814,7 @@ function highestTag(tags) {
 function computeNextMinor(tag) {
   const version = import_semver.default.parse(tag);
   if (!version) throw new Error(`Invalid tag: ${tag}`);
-  const prefix = tag.startsWith("v") ? "v" : "";
-  return `${prefix}${version.major}.${version.minor + 1}`;
+  return `${version.major}.${version.minor + 1}.0`;
 }
 
 // src/actions/release-get-next-minor/index.ts
