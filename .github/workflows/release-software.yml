@@ -38,7 +38,7 @@ on:
 
 env:
   RELEASE_BRANCH: ${{ inputs.release_branch }}
-  CONTAINER_IMAGE_TAG: "${{ inputs.container_image }}:${{ inputs.release_tag }}"
+  CONTAINER_IMAGE_TAG: "${{ inputs.container_registry }}/${{ inputs.container_image }}:${{ inputs.release_tag }}"
   OCI_USERNAME: ${{ inputs.oci_username }}
   OCI_PASSWORD: ${{ secrets.oci_password }}
 
