@@ -1,5 +1,6 @@
 import {
     computeDevVersion,
+    computeNextMinor,
     computeNextRcTag,
     computeReleaseBranchName,
     computeStableTag,
@@ -349,5 +350,19 @@ describe('computeReleaseBranchName', () => {
 
   it('uses the configured release branch prefix', () => {
     expect(computeReleaseBranchName('v5.1.0', 'minor', 'release/')).toBe('release/v5.2')
+  })
+})
+
+describe('computeNextMinor', () => {
+  it.each([
+    ['v5.1.0', 'v5.2'],
+    ['v6.0.0-rc.8', 'v6.1'],
+    ['4.15.4', '4.16'],
+  ])('computes the next minor after %s', (tag, expected) => {
+    expect(computeNextMinor(tag)).toBe(expected)
+  })
+
+  it('rejects an invalid tag', () => {
+    expect(() => computeNextMinor('latest')).toThrow('Invalid tag: latest')
   })
 })

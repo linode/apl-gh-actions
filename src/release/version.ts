@@ -160,3 +160,11 @@ export function computeReleaseBranchName(tag: string, bumpType: 'minor' | 'major
     : [version.major, version.minor + 1]
   return `${branchPrefix}v${newMajor}.${newMinor}`
 }
+
+export function computeNextMinor(tag: string): string {
+  const version = semver.parse(tag)
+  if (!version) throw new Error(`Invalid tag: ${tag}`)
+
+  const prefix = tag.startsWith('v') ? 'v' : ''
+  return `${prefix}${version.major}.${version.minor + 1}`
+}

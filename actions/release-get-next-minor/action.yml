@@ -1,0 +1,8 @@
+name: Release Get Next Minor
+description: Get the next minor version derived from the highest SemVer tag.
+outputs:
+  minor:
+    description: Next minor version (for example, v6.1).
+runs:
+  using: node24
+  main: dist/index.js
