@@ -20,7 +20,11 @@ on:
         required: true
         type: string
       container_registry:
-        description: 'Container repository to push release images to'
+        description: 'Container registry to push release images to (e.g.: docker.io, ghcr.io, etc.)'
+        required: true
+        type: string
+      container_image:
+        description: 'Container repository to push release images to. Can contain org name (e.g. linode/apl-gh-actions)'
         required: true
         type: string
       oci_username:
@@ -34,7 +38,7 @@ on:
 
 env:
   RELEASE_BRANCH: ${{ inputs.release_branch }}
-  CONTAINER_REGISTRY: ${{ inputs.container_registry }}
+  CONTAINER_IMAGE_TAG: "${{ inputs.container_image }}:${{ inputs.release_tag }}"
   OCI_USERNAME: ${{ inputs.oci_username }}
   OCI_PASSWORD: ${{ secrets.oci_password }}
   LOCAL_CACHE_IMAGE: cache:ci-build
@@ -66,7 +70,7 @@ jobs:
           build-args: |
             SKIP_TESTS=false
             VERSION=${{ inputs.release_tag }}
-          tags: ${{ inputs.release_tag }}
+          tags: ${{ env.CONTAINER_IMAGE_TAG }}
 
       - name: Configure git identity
         env:
@@ -85,6 +89,7 @@ jobs:
         if: ${{ !inputs.dry_run }}
         uses: docker/login-action@v4
         with:
+          registry: ${{ inputs.container_registry }}
           username: ${{ env.OCI_USERNAME }}
           password: ${{ env.OCI_PASSWORD }}
 
@@ -97,7 +102,7 @@ jobs:
           build-args: |
             SKIP_TESTS=true
             VERSION=${{ inputs.release_tag }}
-          tags: ${{ inputs.release_tag }}
+          tags: ${{ env.CONTAINER_IMAGE_TAG }}
 
       - name: Create GitHub Release
         uses: linode/apl-gh-actions/actions/release-create-github-release@main
