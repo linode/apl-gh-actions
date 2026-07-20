@@ -41,7 +41,6 @@ env:
   CONTAINER_IMAGE_TAG: "${{ inputs.container_image }}:${{ inputs.release_tag }}"
   OCI_USERNAME: ${{ inputs.oci_username }}
   OCI_PASSWORD: ${{ secrets.oci_password }}
-  LOCAL_CACHE_IMAGE: cache:ci-build
 
 jobs:
   release-software:
