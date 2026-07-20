@@ -189,19 +189,6 @@ Prepares Helm chart files for a release tag:
 
 ---
 
-### `release:docker-push`
-
-Tags a locally-cached Docker image and pushes it to Docker Hub under `<DOCKER_REPO>:<RELEASE_TAG>`. Also pushes `:<latest>` when the tag is the highest stable release across all tags in the repository.
-
-| Variable | Default | Description |
-|---|---|---|
-| `RELEASE_TAG` | — | Image tag to push |
-| `LOCAL_CACHE_IMAGE` | — | Local image reference to tag from |
-| `DOCKER_REPO` | `linode/apl-core` | Docker Hub repository |
-| `DRY_RUN` | `false` | Print commands without executing |
-
----
-
 ## Triggering workflows manually
 
 Both release workflows accept `workflow_dispatch` inputs and can be triggered from the CLI with `gh workflow run`.

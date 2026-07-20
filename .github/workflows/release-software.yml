@@ -66,7 +66,7 @@ jobs:
           build-args: |
             SKIP_TESTS=false
             VERSION=${{ inputs.release_tag }}
-          tags: ${{ env.LOCAL_CACHE_IMAGE }}
+          tags: ${{ inputs.release_tag }}
 
       - name: Configure git identity
         env:
@@ -81,21 +81,23 @@ jobs:
           release_tag: ${{ inputs.release_tag }}
           dry_run: ${{ inputs.dry_run }}
 
-      # - name: Login to Docker Hub
-      #   if: ${{ !inputs.dry_run }}
-      #   uses: docker/login-action@v4
-      #   with:
-      #     username: ${{ env.OCI_USERNAME }}
-      #     password: ${{ env.OCI_PASSWORD }}
+      - name: Login to Docker Hub
+        if: ${{ !inputs.dry_run }}
+        uses: docker/login-action@v4
+        with:
+          username: ${{ env.OCI_USERNAME }}
+          password: ${{ env.OCI_PASSWORD }}
 
-      # - name: Push Docker image with release tag
-      #   working-directory: .
-      #   run: npm run release:docker-push
-      #   env:
-      #     RELEASE_TAG: ${{ inputs.release_tag }}
-      #     CACHE_IMAGE: ${{ env.LOCAL_CACHE_IMAGE }}
-      #     DOCKER_REPO: ${{ env.CONTAINER_REGISTRY }}
-      #     DRY_RUN: ${{ inputs.dry_run }}
+      - name: Run tests in Docker (test gate)
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          load: true
+          context: .
+          build-args: |
+            SKIP_TESTS=true
+            VERSION=${{ inputs.release_tag }}
+          tags: ${{ inputs.release_tag }}
 
       - name: Create GitHub Release
         uses: linode/apl-gh-actions/actions/release-create-github-release@main
