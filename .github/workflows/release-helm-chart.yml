@@ -62,7 +62,7 @@ jobs:
           git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
       - name: Prepare Helm chart
         if: ${{ !inputs.dry_run }}
-        uses: linode/apl-gh-actions/actions/release-prepare-chart-for-release@v0.2.4
+        uses: linode/apl-gh-actions/actions/release-prepare-chart-for-release@v0.2.5
         with:
           chart_path: ${{ inputs.charts_dir }}/${{ inputs.chart_name }}
           release_tag: ${{ inputs.release_tag }}

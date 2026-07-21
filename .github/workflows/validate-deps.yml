@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check versions.yaml entries are semver-compatible
-        uses: linode/apl-gh-actions/actions/release-check-versions-yaml@v0.2.4
+        uses: linode/apl-gh-actions/actions/release-check-versions-yaml@v0.2.5
         with:
           repo_root: ${{ github.workspace }}
           is_prerelease: ${{ inputs.is_prerelease }}
