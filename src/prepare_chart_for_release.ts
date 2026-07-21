@@ -12,27 +12,13 @@ function getRequiredEnv(name: string): string {
   return value
 }
 
-function deriveAppVersion(releaseTag: string): string {
-  const coerced = semver.coerce(releaseTag)
-  if (!coerced) {
-    throw new Error(`Unable to parse semantic version from RELEASE_TAG: ${releaseTag}`)
-  }
-
-  const versionStart = releaseTag.indexOf(coerced.version)
-  if (versionStart === -1) {
-    throw new Error(`Unable to derive app version from RELEASE_TAG: ${releaseTag}`)
-  }
-
-  return coerced.toString()
-}
-
 function updateChartYaml(chartPath: string, appVersion: string, releaseTag: string): void {
   const chartYamlPath = join(chartPath, 'Chart.yaml')
   const chartYaml = readFileSync(chartYamlPath, 'utf8')
 
   const updated = chartYaml
-    .replaceAll('0.0.0-chart-version', appVersion)
-    .replaceAll('APP_VERSION_PLACEHOLDER', releaseTag)
+    .replaceAll('0.0.0-chart-version', releaseTag)
+    .replaceAll('APP_VERSION_PLACEHOLDER', appVersion)
 
   writeFileSync(chartYamlPath, updated)
 }
@@ -46,7 +32,7 @@ function generateSchema(chartPath: string): void {
 }
 
 export function prepareChartForRelease(releaseTag: string, chartPath = 'chart/apl'): void {
-  const appVersion = deriveAppVersion(releaseTag)
+  const appVersion = releaseTag
 
   updateChartYaml(chartPath, appVersion, releaseTag)
   generateSchema(chartPath)
