@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.release_branch }}
+          fetch-depth: 0
 
       - name: Check versions.yaml entries are semver-compatible
         uses: linode/apl-gh-actions/actions/release-check-versions-yaml@v0.2.4
