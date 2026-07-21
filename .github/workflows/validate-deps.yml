@@ -25,7 +25,7 @@ jobs:
           ref: ${{ inputs.release_branch }}
 
       - name: Check versions.yaml entries are semver-compatible
-        uses: linode/apl-gh-actions/actions/release-check-versions-yaml@0.2.1
+        uses: linode/apl-gh-actions/actions/release-check-versions-yaml@0.2.3
         with:
           repo_root: ${{ github.workspace }}
           is_prerelease: ${{ inputs.is_prerelease }}
