@@ -51,7 +51,7 @@ jobs:
 
       - name: Compute release tag
         id: compute-tag
-        uses: linode/apl-gh-actions/actions/release-compute-tag@0.2.3
+        uses: linode/apl-gh-actions/actions/release-compute-tag@v0.2.4
         with:
           is_prerelease: ${{ inputs.is_prerelease }}
           release_branch: ${{ inputs.release_branch }}
@@ -59,6 +59,6 @@ jobs:
           release_tag_prefix: ${{ inputs.release_tag_prefix }}
 
       - name: Check tag does not already exist
-        uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@0.2.3
+        uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@v0.2.4
         with:
           release_tag: ${{ steps.compute-tag.outputs.tag }}
