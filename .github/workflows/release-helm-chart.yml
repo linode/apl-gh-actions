@@ -10,6 +10,16 @@ on:
         description: 'Skip chart preparation and publication'
         required: true
         type: boolean
+      charts_dir:
+        description: 'Directory containing Helm charts'
+        required: false
+        default: chart
+        type: string
+      chart_name:
+        description: 'Name of the Helm chart to release'
+        required: false
+        default: apl-test
+        type: string
   workflow_dispatch:
     inputs:
       release_tag:
@@ -21,6 +31,16 @@ on:
         required: true
         default: true
         type: boolean
+      charts_dir:
+        description: 'Directory containing Helm charts'
+        required: false
+        default: chart
+        type: string
+      chart_name:
+        description: 'Name of the Helm chart to release'
+        required: false
+        default: apl-test
+        type: string
 
 permissions:
   contents: write
@@ -39,14 +59,14 @@ jobs:
         if: ${{ !inputs.dry_run }}
         uses: linode/apl-gh-actions/actions/release-prepare-chart-for-release@main
         with:
-          chart_path: chart/apl-test
+          chart_path: ${{ inputs.charts_dir }}/${{ inputs.chart_name }}
           release_tag: ${{ inputs.release_tag }}
 
       - name: Publish Helm chart
         if: ${{ !inputs.dry_run }}
         uses: helm/chart-releaser-action@v1.7.0
         with:
-          charts_dir: chart
+          charts_dir: ${{ inputs.charts_dir }}
           skip_existing: true
           mark_as_latest: false
         env:
