@@ -11,41 +11,14 @@ on:
         description: 'Skip all writes (tag, release, and Docker push)'
         required: true
         type: boolean
-      container_registry:
-        description: 'Container registry to push release images to (e.g.: docker.io, ghcr.io, etc.)'
-        required: true
-        type: string
-      container_image:
-        description: 'Container repository to push release images to. Can contain org name (e.g. linode/apl-gh-actions)'
-        required: true
-        type: string
-      release_branch_prefix:
-        description: 'Prefix required for release branches'
-        required: false
-        default: 'releases/'
-        type: string
-      release_tag_prefix:
-        description: 'Prefix to add to release tags'
-        required: false
-        default: 'v'
-        type: string
-      require_rc_before_stable:
-        description: 'Require a prior RC tag on the branch before promoting to stable'
-        required: false
-        default: false
-        type: boolean
-    secrets:
-      oci_username:
-        description: 'Username used to authenticate to the container registry'
-        required: true
-      oci_password:
-        description: 'Password or token used to authenticate to the container registry'
-        required: true
 
 env:
+  CONTAINER_REGISTRY: docker.io
+  CONTAINER_IMAGE_NAME: linode/apl-gh-actions
   RELEASE_BRANCH: ${{ github.ref_name }}
-  OCI_USERNAME: ${{ secrets.DOCKERHUB_LINODEBOT_USERNAME }}
-  OCI_PASSWORD: ${{ secrets.DOCKERHUB_LINODEBOT_TOKEN }}
+  OCI_USERNAME: ${{ secrets.OCI_USERNAME }}
+  OCI_PASSWORD: ${{ secrets.OCI_PASSWORD }}
+
 
 jobs:
   release-get-tag:
@@ -67,9 +40,11 @@ jobs:
         with:
           is_prerelease: ${{ inputs.is_prerelease }}
           release_branch: ${{ github.ref_name }}
-          release_branch_prefix: ${{ inputs.release_branch_prefix }}
-          release_tag_prefix: ${{ inputs.release_tag_prefix }}
-          require_rc_before_stable: ${{ inputs.require_rc_before_stable }}
+          release_branch_prefix: 'releases/'
+          release_tag_prefix: 'v'
+          require_rc_before_stable: false
+          check_tag_not_exists: true
+          validate_branch: true
 
   release-software:
     runs-on: ubuntu-22.04
@@ -79,7 +54,7 @@ jobs:
       - release-get-tag
     env:
       GIT_TAG: ${{ needs.release-get-tag.outputs.release_tag }}
-      CONTAINER_IMAGE_TAG: ${{ inputs.container_registry }}/${{ inputs.container_image }}:${{ needs.release-get-tag.outputs.release_tag }}
+      CONTAINER_IMAGE_TAG: ${{ env.CONTAINER_REGISTRY }}/${{ env.CONTAINER_IMAGE_NAME }}:${{ needs.release-get-tag.outputs.release_tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
