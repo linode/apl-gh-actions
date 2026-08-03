@@ -22186,9 +22186,17 @@ function tagsForReleaseSeries(tags, releaseSeries) {
     return parsed?.major === releaseSeries.major && parsed?.minor === releaseSeries.minor;
   });
 }
-function computeStableTag(branchTags, releaseSeries, tagPrefix) {
-  const rcs = tagsForReleaseSeries(branchTags, releaseSeries).filter((t) => t.includes("-rc.")).sort((a, b) => import_semver.default.rcompare(a, b));
-  if (rcs.length === 0) throw new Error("No RC tags on branch \u2014 cannot promote to stable without a prior RC");
+function computeStableTag(branchTags, releaseSeries, tagPrefix, requireRcBeforeStable) {
+  const seriesTags = tagsForReleaseSeries(branchTags, releaseSeries);
+  const rcs = seriesTags.filter((t) => t.includes("-rc.")).sort((a, b) => import_semver.default.rcompare(a, b));
+  if (rcs.length === 0 && requireRcBeforeStable) {
+    throw new Error("No RC tags on branch \u2014 cannot promote to stable without a prior RC");
+  }
+  if (rcs.length === 0) {
+    const { major, minor } = releaseSeries;
+    const highestStablePatch = seriesTags.map((tag) => import_semver.default.parse(tag)).filter((version2) => version2 !== null && version2.prerelease.length === 0).reduce((highest, version2) => Math.max(highest, version2.patch), -1);
+    return `${tagPrefix}${major}.${minor}.${highestStablePatch + 1}`;
+  }
   const version = import_semver.default.coerce(rcs[0])?.toString();
   return `${tagPrefix}${version}`;
 }
@@ -22205,18 +22213,19 @@ function computeNextRcTag(branchTags, releaseSeries, tagPrefix) {
 }
 
 // src/release/compute-tag.ts
-function computeTag(branchTags, releaseSeries, promote, tagPrefix) {
-  return promote ? computeStableTag(branchTags, releaseSeries, tagPrefix) : computeNextRcTag(branchTags, releaseSeries, tagPrefix);
+function computeTag(branchTags, releaseSeries, promote, tagPrefix, requireRcBeforeStable) {
+  return promote ? computeStableTag(branchTags, releaseSeries, tagPrefix, requireRcBeforeStable) : computeNextRcTag(branchTags, releaseSeries, tagPrefix);
 }
 function runComputeTagFromEnv() {
   const promote = process.env.IS_PRERELEASE !== "true";
+  const requireRcBeforeStable = process.env.REQUIRE_RC_BEFORE_STABLE === "true";
   const branchName = process.env.RELEASE_BRANCH;
   const branchPrefix = process.env.RELEASE_BRANCH_PREFIX;
   const tagPrefix = process.env.RELEASE_TAG_PREFIX ?? "";
   const tagsRaw = (0, import_child_process.execSync)("git tag --merged HEAD", { encoding: "utf8" });
   const branchTags = tagsRaw.trim().split("\n").filter(Boolean);
   const releaseSeries = releaseSeriesFromBranch(branchName, branchPrefix);
-  const tag = computeTag(branchTags, releaseSeries, promote, tagPrefix);
+  const tag = computeTag(branchTags, releaseSeries, promote, tagPrefix, requireRcBeforeStable);
   console.log(`Computed tag: ${tag}`);
   if (process.env.GITHUB_OUTPUT) {
     (0, import_fs.appendFileSync)(process.env.GITHUB_OUTPUT, `tag=${tag}
@@ -22241,6 +22250,7 @@ async function run() {
   process.env.RELEASE_BRANCH = core.getInput("release_branch", { required: true });
   process.env.RELEASE_BRANCH_PREFIX = core.getInput("release_branch_prefix") || "releases/";
   process.env.RELEASE_TAG_PREFIX = core.getInput("release_tag_prefix") || "v";
+  process.env.REQUIRE_RC_BEFORE_STABLE = core.getInput("require_rc_before_stable") || "false";
   const tag = runComputeTagFromEnv();
   core.setOutput("tag", tag);
 }

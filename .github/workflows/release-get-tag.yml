@@ -21,6 +21,11 @@ on:
         required: false
         default: 'v'
         type: string
+      require_rc_before_stable:
+        description: 'Require a prior RC tag on the branch before promoting to stable'
+        required: false
+        default: false
+        type: boolean
     outputs:
       release_tag:
         description: 'Derived and validated release tag'
@@ -57,6 +62,7 @@ jobs:
           release_branch: ${{ inputs.release_branch }}
           release_branch_prefix: ${{ inputs.release_branch_prefix }}
           release_tag_prefix: ${{ inputs.release_tag_prefix }}
+          require_rc_before_stable: ${{ inputs.require_rc_before_stable }}
 
       - name: Check tag does not already exist
         uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@v0.2.5

@@ -131,12 +131,15 @@ Validates `versions.yaml` at the repo root before a release is tagged:
 
 Computes the next tag to create. When `IS_PRERELEASE=true`, increments the RC counter on `RELEASE_BRANCH`. When `IS_PRERELEASE` is absent or `false`, promotes the highest RC to a stable tag.
 
+By default, promoting to stable does not require a prior RC tag on the branch: if none exists, the tag is derived from the highest existing stable patch in the series (or patch `0` if none exists). Set `REQUIRE_RC_BEFORE_STABLE=true` to restore the stricter behavior, where promoting without a prior RC tag fails.
+
 Writes `tag` and `is_prerelease` to `GITHUB_OUTPUT`.
 
 | Variable | Description |
 |---|---|
 | `RELEASE_BRANCH` | Branch name (e.g. `releases/v6.1`) |
 | `IS_PRERELEASE` | `true` to cut an RC; omit or `false` to promote to stable |
+| `REQUIRE_RC_BEFORE_STABLE` | `true` to require a prior RC tag before promoting to stable; omit or `false` to allow promoting without one |
 
 ---
 
@@ -240,6 +243,8 @@ gh workflow run release-from-branch.yml \
   -f is_prerelease=false \
   -f dry_run=false
 ```
+
+By default, promoting to stable does not require a prior RC tag on the branch — see [`release:compute-tag`](#releasecompute-tag) above. Pass `require_rc_before_stable=true` to `release-get-tag.yml` to restore the stricter behavior.
 
 To watch the run after triggering it:
 

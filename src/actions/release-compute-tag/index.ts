@@ -6,6 +6,7 @@ async function run() {
   process.env.RELEASE_BRANCH = core.getInput('release_branch', { required: true })
   process.env.RELEASE_BRANCH_PREFIX = core.getInput('release_branch_prefix') || 'releases/'
   process.env.RELEASE_TAG_PREFIX = core.getInput('release_tag_prefix') || 'v'
+  process.env.REQUIRE_RC_BEFORE_STABLE = core.getInput('require_rc_before_stable') || 'false'
 
   const tag = runComputeTagFromEnv()
   core.setOutput('tag', tag)

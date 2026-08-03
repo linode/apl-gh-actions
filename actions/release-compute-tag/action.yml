@@ -15,6 +15,10 @@ inputs:
     description: Prefix to add to computed tags.
     required: false
     default: v
+  require_rc_before_stable:
+    description: Set true to require a prior RC tag on the branch before promoting to stable.
+    required: false
+    default: 'false'
 outputs:
   tag:
     description: Computed release tag.

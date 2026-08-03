@@ -95,11 +95,28 @@ function tagsForReleaseSeries(tags: string[], releaseSeries: ReleaseSeries): str
   })
 }
 
-export function computeStableTag(branchTags: string[], releaseSeries: ReleaseSeries, tagPrefix: string): string {
-  const rcs = tagsForReleaseSeries(branchTags, releaseSeries)
-    .filter((t) => t.includes('-rc.'))
-    .sort((a, b) => semver.rcompare(a, b))
-  if (rcs.length === 0) throw new Error('No RC tags on branch — cannot promote to stable without a prior RC')
+export function computeStableTag(
+  branchTags: string[],
+  releaseSeries: ReleaseSeries,
+  tagPrefix: string,
+  requireRcBeforeStable: boolean
+): string {
+  const seriesTags = tagsForReleaseSeries(branchTags, releaseSeries)
+  const rcs = seriesTags.filter((t) => t.includes('-rc.')).sort((a, b) => semver.rcompare(a, b))
+
+  if (rcs.length === 0 && requireRcBeforeStable) {
+    throw new Error('No RC tags on branch — cannot promote to stable without a prior RC')
+  }
+
+  if (rcs.length === 0) {
+    const { major, minor } = releaseSeries
+    const highestStablePatch = seriesTags
+      .map((tag) => semver.parse(tag))
+      .filter((version): version is semver.SemVer => version !== null && version.prerelease.length === 0)
+      .reduce((highest, version) => Math.max(highest, version.patch), -1)
+    return `${tagPrefix}${major}.${minor}.${highestStablePatch + 1}`
+  }
+
   const version = semver.coerce(rcs[0])?.toString() // ensure the tag is a valid semver version
   return `${tagPrefix}${version}`
 }
