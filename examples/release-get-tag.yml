@@ -44,27 +44,12 @@ jobs:
           ref: ${{ inputs.release_branch }}
           fetch-depth: 0
 
-      - name: Validate release branch
-        run: |
-          if [[ "$RELEASE_BRANCH" != $RELEASE_BRANCH_PREFIX* ]]; then
-            echo "::error::release_from_branch may only run on $RELEASE_BRANCH_PREFIX* branches. Got: $RELEASE_BRANCH"
-            exit 1
-          fi
-        env:
-          RELEASE_BRANCH: ${{ inputs.release_branch }}
-          RELEASE_BRANCH_PREFIX: ${{ inputs.release_branch_prefix }}
-
-      - name: Compute release tag
+      - name: Validate branch, compute release tag, and check it does not already exist
         id: compute-tag
-        uses: linode/apl-gh-actions/actions/release-compute-tag@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-get-tag@v0.3.0
         with:
           is_prerelease: ${{ inputs.is_prerelease }}
           release_branch: ${{ inputs.release_branch }}
           release_branch_prefix: ${{ inputs.release_branch_prefix }}
           release_tag_prefix: ${{ inputs.release_tag_prefix }}
           require_rc_before_stable: ${{ inputs.require_rc_before_stable }}
-
-      - name: Check tag does not already exist
-        uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@v0.2.5
-        with:
-          release_tag: ${{ steps.compute-tag.outputs.tag }}

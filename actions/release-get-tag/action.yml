@@ -1,5 +1,5 @@
-name: Release Compute Tag
-description: Compute the next prerelease or stable release tag.
+name: Release Get Tag
+description: Validate the release branch, compute the next release tag, and check it does not already exist.
 inputs:
   is_prerelease:
     description: Set true to compute an RC tag, false for stable promotion.
@@ -19,6 +19,14 @@ inputs:
     description: Set true to require a prior RC tag on the branch before promoting to stable.
     required: false
     default: 'false'
+  validate_branch:
+    description: Set true to validate that release_branch starts with release_branch_prefix.
+    required: false
+    default: 'true'
+  check_tag_not_exists:
+    description: Set true to fail if the computed tag already exists.
+    required: false
+    default: 'true'
 outputs:
   tag:
     description: Computed release tag.

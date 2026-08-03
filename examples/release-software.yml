@@ -61,30 +61,15 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Validate release branch
-        run: |
-          if [[ "$RELEASE_BRANCH" != $RELEASE_BRANCH_PREFIX* ]]; then
-            echo "::error::release_from_branch may only run on $RELEASE_BRANCH_PREFIX* branches. Got: $RELEASE_BRANCH"
-            exit 1
-          fi
-        env:
-          RELEASE_BRANCH: ${{ github.ref_name }}
-          RELEASE_BRANCH_PREFIX: ${{ inputs.release_branch_prefix }}
-
-      - name: Compute release tag
+      - name: Validate branch, compute release tag, and check it does not already exist
         id: compute-tag
-        uses: linode/apl-gh-actions/actions/release-compute-tag@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-get-tag@v0.3.0
         with:
           is_prerelease: ${{ inputs.is_prerelease }}
           release_branch: ${{ github.ref_name }}
           release_branch_prefix: ${{ inputs.release_branch_prefix }}
           release_tag_prefix: ${{ inputs.release_tag_prefix }}
           require_rc_before_stable: ${{ inputs.require_rc_before_stable }}
-
-      - name: Check tag does not already exist
-        uses: linode/apl-gh-actions/actions/release-check-tag-not-exists@v0.2.5
-        with:
-          release_tag: ${{ steps.compute-tag.outputs.tag }}
 
   release-software:
     runs-on: ubuntu-22.04
@@ -111,7 +96,7 @@ jobs:
           git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Create and push git tag
-        uses: linode/apl-gh-actions/actions/release-tag@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-tag@v0.3.0
         with:
           release_tag: ${{ env.GIT_TAG }}
           dry_run: ${{ inputs.dry_run }}
@@ -139,7 +124,7 @@ jobs:
           tags: ${{ env.CONTAINER_IMAGE_TAG }}
 
       - name: Create GitHub Release
-        uses: linode/apl-gh-actions/actions/release-create-github-release@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-create-github-release@v0.3.0
         with:
           release_tag: ${{ env.GIT_TAG }}
           is_prerelease: ${{ inputs.is_prerelease }}

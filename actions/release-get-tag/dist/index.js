@@ -19692,7 +19692,7 @@ var require_core = __commonJS({
       return inputs.map((input) => input.trim());
     }
     exports2.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -19703,7 +19703,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports2.getBooleanInput = getBooleanInput;
+    exports2.getBooleanInput = getBooleanInput2;
     function setOutput2(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -20082,7 +20082,7 @@ var require_main2 = __commonJS({
         return { parsed: parsedAll };
       }
     }
-    function config2(options) {
+    function config3(options) {
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
@@ -20149,7 +20149,7 @@ var require_main2 = __commonJS({
       configDotenv,
       _configVault,
       _parseVault,
-      config: config2,
+      config: config3,
       decrypt,
       parse,
       populate
@@ -22159,8 +22159,15 @@ var require_semver2 = __commonJS({
   }
 });
 
-// src/actions/release-compute-tag/index.ts
+// src/actions/release-get-tag/index.ts
 var core = __toESM(require_core());
+
+// src/release/validate-branch.ts
+function validateReleaseBranch(branchName, branchPrefix) {
+  if (!branchName.startsWith(branchPrefix)) {
+    throw new Error(`release_from_branch may only run on ${branchPrefix}* branches. Got: ${branchName}`);
+  }
+}
 
 // src/release/compute-tag.ts
 var import_child_process = require("child_process");
@@ -22244,14 +22251,56 @@ if (require.main === module && !process.env.GITHUB_ACTIONS) {
   }
 }
 
-// src/actions/release-compute-tag/index.ts
+// src/release/check-tag-not-exists.ts
+var import_child_process2 = require("child_process");
+var import_dotenv2 = __toESM(require_main2());
+function checkTagNotExists(tag) {
+  if (!tag) {
+    throw new Error("RELEASE_TAG is required");
+  }
+  let exists = true;
+  try {
+    (0, import_child_process2.execSync)(`git rev-parse --verify "refs/tags/${tag}"`, { stdio: "pipe" });
+  } catch {
+    exists = false;
+  }
+  if (exists) {
+    throw new Error(`Tag "${tag}" already exists. Aborting to prevent duplicate release.`);
+  }
+  console.log(`Tag "${tag}" does not exist \u2014 safe to create`);
+}
+function runCheckTagNotExistsFromEnv() {
+  checkTagNotExists(process.env.RELEASE_TAG);
+}
+if (require.main === module && !process.env.GITHUB_ACTIONS) {
+  (0, import_dotenv2.config)();
+  try {
+    runCheckTagNotExistsFromEnv();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message);
+    process.exit(1);
+  }
+}
+
+// src/actions/release-get-tag/index.ts
 async function run() {
+  const releaseBranch = core.getInput("release_branch", { required: true });
+  const releaseBranchPrefix = core.getInput("release_branch_prefix") || "releases/";
+  const validateBranch = core.getBooleanInput("validate_branch");
+  const checkTagExists = core.getBooleanInput("check_tag_not_exists");
+  if (validateBranch) {
+    validateReleaseBranch(releaseBranch, releaseBranchPrefix);
+  }
   process.env.IS_PRERELEASE = core.getInput("is_prerelease", { required: true });
-  process.env.RELEASE_BRANCH = core.getInput("release_branch", { required: true });
-  process.env.RELEASE_BRANCH_PREFIX = core.getInput("release_branch_prefix") || "releases/";
+  process.env.RELEASE_BRANCH = releaseBranch;
+  process.env.RELEASE_BRANCH_PREFIX = releaseBranchPrefix;
   process.env.RELEASE_TAG_PREFIX = core.getInput("release_tag_prefix") || "v";
   process.env.REQUIRE_RC_BEFORE_STABLE = core.getInput("require_rc_before_stable") || "false";
   const tag = runComputeTagFromEnv();
+  if (checkTagExists) {
+    checkTagNotExists(tag);
+  }
   core.setOutput("tag", tag);
 }
 run().catch((error) => {
