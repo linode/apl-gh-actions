@@ -1,5 +1,36 @@
-# CI Scripts
+# Overview
 
+This repository hosts reusable GitHub actions for software release process.
+The whole concept is build around the idea of enabling software engineers to continue development while working on a given software release in parallel. That being said, the main branch should never be blocked by the release process. Moreover software engineers can always deliver patches on existing release branches, like presented in the below git graph:
+
+```
+main            ●───●───●───●───────────────────────────●───●───●───●───●───▶
+                        │                               |
+                        │ cut release branch            |
+                        ▼                               |
+releases/v1.4           ●───●───●───▶                   |
+                        │       │                       |
+                        ▼       ▼                       |
+                     tag      tag                       |
+                v1.4.0-rc.1  v1.4.0                     |
+                                                        |
+releases/v2.                                            ●───●───●───●───▶
+                                                        │       │       
+                                                        ▼       ▼       
+                                                      tag      tag      
+                                                v2.0.0-rc.1  v2.0.0-rc.2
+```
+From above:
+1. A release branch (`releases/vMAJOR.MINOR`) is cut from `main` at a stable point.
+2. `main` keeps moving independently (top line); fixes needed for the release are applied directly on the release branch.
+3. Each git tag is derived from the previous git tag
+
+# Quickstart
+
+The best starting point is to look at github workflows defined in the  `./examples` and to reuse them in your repository.
+
+
+# Usage
 Run any script from the repository root:
 
 ```sh
@@ -191,63 +222,3 @@ Prepares Helm chart files for a release tag:
 | `CHART_PATH` | `chart/apl` | Chart directory containing `Chart.yaml` |
 
 ---
-
-## Triggering workflows manually
-
-Both release workflows accept `workflow_dispatch` inputs and can be triggered from the CLI with `gh workflow run`.
-
-### Cut Release Branch
-
-Creates a new `releases/vMAJOR.MINOR` branch from the specified base and pushes it.
-
-```sh
-# Dry run — derives and validates the branch name without pushing
-gh workflow run release-create-branch.yml \
-  -f bump_type=minor \
-  -f base_branch=main \
-  -f dry_run=true
-
-# Cut a minor release branch for real
-gh workflow run release-create-branch.yml \
-  -f bump_type=minor \
-  -f base_branch=main \
-  -f dry_run=false
-
-# Cut a major release branch for real
-gh workflow run release-create-branch.yml \
-  -f bump_type=major \
-  -f base_branch=main \
-  -f dry_run=false
-```
-
-### Release from Branch
-
-Tags and publishes a release (RC or stable) from an existing `releases/*` branch.
-
-```sh
-# Dry run — computes the tag and validates without writing anything
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=true \
-  -f dry_run=true
-
-# Cut an RC tag (e.g. v1.4.0-rc.1)
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=true \
-  -f dry_run=false
-
-# Promote the highest RC to a stable release (e.g. v1.4.0)
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=false \
-  -f dry_run=false
-```
-
-By default, promoting to stable does not require a prior RC tag on the branch — see [`release:compute-tag`](#releasecompute-tag) above. Pass `require_rc_before_stable=true` to `release-get-tag.yml` to restore the stricter behavior.
-
-To watch the run after triggering it:
-
-```sh
-gh run watch
-```
