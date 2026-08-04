@@ -1,21 +1,20 @@
 name: Cut Release Branch
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       bump_type:
         description: 'Version bump type'
         required: true
-        type: string
+        type: choice
+        options:
+          - major
+          - minor
+        default: minor
       base_branch:
         description: 'Branch to cut from'
         required: false
         default: 'main'
-        type: string
-      release_branch_prefix:
-        description: 'Prefix for release branches'
-        required: false
-        default: 'releases/'
         type: string
       dry_run:
         description: 'Dry run — skip all writes (git push)'
@@ -23,7 +22,7 @@ on:
         type: boolean
 
 env:
-  RELEASE_BRANCH_PREFIX: ${{ inputs.release_branch_prefix }}
+  RELEASE_BRANCH_PREFIX: 'releases/'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -37,19 +36,20 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.base_branch }}
+          # This is required to fetch all tags so that the derive-branch action can find the highest stable tag
           fetch-depth: 0
           token: ${{ env.GITHUB_TOKEN }}
 
 
       - name: Derive release branch from highest stable tag
         id: derive-branch
-        uses: linode/apl-gh-actions/actions/release-derive-branch@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-derive-branch@main
         with:
           bump_type: ${{ inputs.bump_type }}
           release_branch_prefix: ${{ env.RELEASE_BRANCH_PREFIX }}
 
       - name: Check release branch does not already exist
-        uses: linode/apl-gh-actions/actions/release-check-branch-not-exists@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-check-branch-not-exists@main
         with:
           release_branch: ${{ steps.derive-branch.outputs.branch }}
 
@@ -62,7 +62,7 @@ jobs:
 
       - name: Create release branch
         if: ${{ !inputs.dry_run }}
-        uses: linode/apl-gh-actions/actions/release-create-branch@v0.2.5
+        uses: linode/apl-gh-actions/actions/release-create-branch@main
         with:
           release_branch: ${{ steps.derive-branch.outputs.branch }}
 
