@@ -1,5 +1,36 @@
-# CI Scripts
+# Overview
 
+This repository hosts reusable GitHub Actions for the software release process.
+The whole concept is built around the idea of enabling software engineers to continue development while working on a given software release in parallel. That being said, the main branch should never be blocked by the release process. Moreover, software engineers can always deliver patches on existing release branches, as presented in the git graph below:
+
+```
+main            ●───●───●───●───────────────────────────●───●───●───●───●───▶
+                        │                               |
+                        │ cut release branch            |
+                        ▼                               |
+releases/v1.4           ●───●───●───▶                   |
+                        │       │                       |
+                        ▼       ▼                       |
+                     tag      tag                       |
+                v1.4.0-rc.1  v1.4.0                     |
+                                                        |
+releases/v2.                                            ●───●───●───●───▶
+                                                        │       │       
+                                                        ▼       ▼       
+                                                      tag      tag      
+                                                v2.0.0-rc.1  v2.0.0-rc.2
+```
+From above:
+1. A release branch (`releases/vMAJOR.MINOR`) is cut from `main` at a stable point.
+2. `main` keeps moving independently (top line); fixes needed for the release are applied directly on the release branch.
+3. Each git tag is derived from the previous git tag
+
+# Quickstart
+
+The best starting point is to look at GitHub workflows defined in the `./examples` and to reuse them in your repository.
+
+
+# Usage
 Run any script from the repository root:
 
 ```sh
@@ -131,12 +162,15 @@ Validates `versions.yaml` at the repo root before a release is tagged:
 
 Computes the next tag to create. When `IS_PRERELEASE=true`, increments the RC counter on `RELEASE_BRANCH`. When `IS_PRERELEASE` is absent or `false`, promotes the highest RC to a stable tag.
 
+By default, promoting to stable does not require a prior RC tag on the branch: if none exists, the tag is derived from the highest existing stable patch in the series (or patch `0` if none exists). Set `REQUIRE_RC_BEFORE_STABLE=true` to restore the stricter behavior, where promoting without a prior RC tag fails.
+
 Writes `tag` and `is_prerelease` to `GITHUB_OUTPUT`.
 
 | Variable | Description |
 |---|---|
 | `RELEASE_BRANCH` | Branch name (e.g. `releases/v6.1`) |
 | `IS_PRERELEASE` | `true` to cut an RC; omit or `false` to promote to stable |
+| `REQUIRE_RC_BEFORE_STABLE` | `true` to require a prior RC tag before promoting to stable; omit or `false` to allow promoting without one |
 
 ---
 
@@ -188,61 +222,3 @@ Prepares Helm chart files for a release tag:
 | `CHART_PATH` | `chart/apl` | Chart directory containing `Chart.yaml` |
 
 ---
-
-## Triggering workflows manually
-
-Both release workflows accept `workflow_dispatch` inputs and can be triggered from the CLI with `gh workflow run`.
-
-### Cut Release Branch
-
-Creates a new `releases/vMAJOR.MINOR` branch from the specified base and pushes it.
-
-```sh
-# Dry run — derives and validates the branch name without pushing
-gh workflow run release-create-branch.yml \
-  -f bump_type=minor \
-  -f base_branch=main \
-  -f dry_run=true
-
-# Cut a minor release branch for real
-gh workflow run release-create-branch.yml \
-  -f bump_type=minor \
-  -f base_branch=main \
-  -f dry_run=false
-
-# Cut a major release branch for real
-gh workflow run release-create-branch.yml \
-  -f bump_type=major \
-  -f base_branch=main \
-  -f dry_run=false
-```
-
-### Release from Branch
-
-Tags and publishes a release (RC or stable) from an existing `releases/*` branch.
-
-```sh
-# Dry run — computes the tag and validates without writing anything
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=true \
-  -f dry_run=true
-
-# Cut an RC tag (e.g. v1.4.0-rc.1)
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=true \
-  -f dry_run=false
-
-# Promote the highest RC to a stable release (e.g. v1.4.0)
-gh workflow run release-from-branch.yml \
-  -f release_branch=releases/v1.4 \
-  -f is_prerelease=false \
-  -f dry_run=false
-```
-
-To watch the run after triggering it:
-
-```sh
-gh run watch
-```
