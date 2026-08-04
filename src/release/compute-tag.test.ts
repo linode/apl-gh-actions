@@ -37,4 +37,8 @@ describe('computeTag', () => {
   it('throws when requireRcBeforeStable is true and promoting to stable with no RC tags', () => {
     expect(() => computeTag([], releaseSeries, true, tagPrefix, true)).toThrow()
   })
+
+  it('derives next stable patch when requireRcBeforeStable is false and no RC tags exist', () => {
+    expect(computeTag(['v6.1.0', 'v6.1.1'], releaseSeries, true, tagPrefix, false)).toBe('v6.1.2')
+  })
 })
