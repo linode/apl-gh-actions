@@ -27,7 +27,7 @@ From above:
 
 # Quickstart
 
-The best starting point is to look at github workflows defined in the  `./examples` and to reuse them in your repository.
+The best starting point is to look at GitHub workflows defined in the `./examples` and to reuse them in your repository.
 
 
 # Usage
