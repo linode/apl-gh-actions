@@ -1,7 +1,7 @@
 # Overview
 
-This repository hosts reusable GitHub actions for software release process.
-The whole concept is build around the idea of enabling software engineers to continue development while working on a given software release in parallel. That being said, the main branch should never be blocked by the release process. Moreover software engineers can always deliver patches on existing release branches, like presented in the below git graph:
+This repository hosts reusable GitHub Actions for the software release process.
+The whole concept is built around the idea of enabling software engineers to continue development while working on a given software release in parallel. That being said, the main branch should never be blocked by the release process. Moreover, software engineers can always deliver patches on existing release branches, as presented in the git graph below:
 
 ```
 main            ●───●───●───●───────────────────────────●───●───●───●───●───▶
