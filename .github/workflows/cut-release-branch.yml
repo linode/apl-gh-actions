@@ -20,7 +20,6 @@ on:
         description: 'Dry run — skip all writes (git push)'
         required: true
         type: boolean
-
 env:
   RELEASE_BRANCH_PREFIX: 'releases/'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,8 +38,12 @@ jobs:
           # This is required to fetch all tags so that the derive-branch action can find the highest stable tag
           fetch-depth: 0
           token: ${{ env.GITHUB_TOKEN }}
-
-
+      - name: Configure git identity
+        env:
+          ACTOR_ID: ${{ github.actor_id }}
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
       - name: Derive release branch from highest stable tag
         id: derive-branch
         uses: linode/apl-gh-actions/actions/release-derive-branch@main
@@ -52,13 +55,6 @@ jobs:
         uses: linode/apl-gh-actions/actions/release-check-branch-not-exists@main
         with:
           release_branch: ${{ steps.derive-branch.outputs.branch }}
-
-      - name: Configure git identity
-        env:
-          ACTOR_ID: ${{ github.actor_id }}
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Create release branch
         if: ${{ !inputs.dry_run }}
