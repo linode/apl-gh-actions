@@ -14,7 +14,7 @@ releases/v1.4           ●───●───●───▶                 
                      tag      tag                       |
                 v1.4.0-rc.1  v1.4.0                     |
                                                         |
-releases/v2.                                            ●───●───●───●───▶
+releases/v2.0                                           ●───●───●───●───▶
                                                         │       │       
                                                         ▼       ▼       
                                                       tag      tag      
