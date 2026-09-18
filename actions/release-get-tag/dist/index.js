@@ -22229,7 +22229,7 @@ function runComputeTagFromEnv() {
   const branchName = process.env.RELEASE_BRANCH;
   const branchPrefix = process.env.RELEASE_BRANCH_PREFIX;
   const tagPrefix = process.env.RELEASE_TAG_PREFIX ?? "";
-  const tagsRaw = (0, import_child_process.execSync)("git tag --merged HEAD", { encoding: "utf8" });
+  const tagsRaw = (0, import_child_process.execSync)("git tag", { encoding: "utf8" });
   const branchTags = tagsRaw.trim().split("\n").filter(Boolean);
   const releaseSeries = releaseSeriesFromBranch(branchName, branchPrefix);
   const tag = computeTag(branchTags, releaseSeries, promote, tagPrefix, requireRcBeforeStable);
