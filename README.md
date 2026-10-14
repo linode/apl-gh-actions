@@ -124,7 +124,29 @@ Writes `tag` and `is_prerelease` to `GITHUB_OUTPUT`.
 |---|---|
 | `RELEASE_BRANCH` | Branch name (e.g. `releases/v6.1`) |
 | `IS_PRERELEASE` | `true` to cut an RC; omit or `false` to promote to stable |
+| `RELEASE_TAG_PREFIX` | Prefix to use for the tag (e.g. `v`, optional) |
 | `REQUIRE_RC_BEFORE_STABLE` | `true` to require a prior RC tag before promoting to stable; omit or `false` to allow promoting without one |
+
+---
+
+### `release:compute-image-tag`
+
+Computes the next tag to create based on the contents of a container image registry. When `IS_PRERELEASE=true`, increments the RC counter on the image tag. When `IS_PRERELEASE` is absent or `false`, promotes the highest RC to a stable tag.
+
+The type of release determines the following version number based on existing tags. The default is to increment the patch version, but by providing `RELEASE_TYPE` you can increment the minor or major version instead.
+
+The release series is usually derived from the latest available release. Should it be necessary to set these manually, RELEASE_MAJOR and RELEASE_MINOR can be provided, but must both be set then. Note that when setting RELEASE_MAJOR and RELEASE_MINOR, the release type is ignored and the patch version is always incremented.
+
+Writes `image_tag` to `GITHUB_OUTPUT`.
+
+| Variable | Description |
+|---|---|
+| `RELEASE_BRANCH` | Branch name (e.g. `releases/v6.1`) |
+| `IS_PRERELEASE` | `true` to create an RC; omit or `false` to derive a stable version |
+| `RELEASE_TAG_PREFIX` | Prefix to use for the tag (e.g. `v`, optional) |
+| `RELEASE_TYPE` | `patch` (default), `minor`, or `major` |
+| `RELEASE_MAJOR` | Major version to use (optional) |
+| `RELEASE_MINOR` | Minor version to use (optional) |
 
 ---
 
