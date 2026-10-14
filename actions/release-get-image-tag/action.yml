@@ -1,0 +1,30 @@
+name: Release Get Image Tag
+description: Compute the next release image tag, based on existing tags in the registry.
+inputs:
+  image_repository:
+    description: Image repository to query for existing tags.
+    required: true
+  is_prerelease:
+    description: Set true to compute an RC tag, false for stable promotion.
+    required: true
+  release_tag_prefix:
+    description: Prefix to add to computed tags.
+    required: false
+    default: v
+  release_type:
+    description: Type of release to compute (patch, minor, major).
+    required: false
+    default: patch
+  release_major:
+    description: Major version to use for the release.
+    required: false
+  release_minor:
+    description: Minor version to use for the release.
+    required: false
+
+outputs:
+  tag:
+    description: Computed image tag.
+runs:
+  using: node24
+  main: dist/index.js
