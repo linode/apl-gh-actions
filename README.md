@@ -128,6 +128,40 @@ Writes `tag` and `is_prerelease` to `GITHUB_OUTPUT`.
 
 ---
 
+### `release:compute-next-tag`
+
+Computes the next tag from `main` (or any other non-versioned branch) by applying a `patch`, `minor`, or `major` bump to the highest stable tag in the repository. Unlike `release:compute-tag`, it does not derive the release series from the branch name. Never creates or pushes tags.
+
+- **Checkout identity**: `HEAD` must equal the tip of `RELEASE_BRANCH`, resolved from `refs/heads/<branch>` or `refs/remotes/origin/<branch>`. A detached `HEAD` at that commit is fine (the default `actions/checkout` mode). Missing refs or mismatched commits fail.
+- **Baseline**: the highest stable tag (by SemVer precedence) among *all* tag refs whose name is exactly `RELEASE_TAG_PREFIX` + an unprefixed SemVer version. Prereleases, malformed tags, and other namespaces are ignored. An empty prefix matches only bare versions like `1.2.3`, not `v1.2.3`. Fails if no baseline exists — it never invents a starting version.
+- **Target**: the bumped baseline, e.g. from `v6.1.2`: patch → `v6.1.3`, minor → `v6.2.0`, major → `v7.0.0`.
+- **RC mode** (`IS_PRERELEASE=true`): highest numeric `rc.N` for the exact target + 1, starting at `rc.1`.
+- **Stable mode**: the target itself. With `REQUIRE_RC_BEFORE_STABLE=true`, an RC for that exact target must already exist.
+- Fails if the output tag already exists rather than changing the bump.
+
+Requires to fetch all tags:
+```yaml
+- uses: actions/checkout@v6
+  with:
+    ref: main
+    fetch-depth: 1
+    fetch-tags: true
+```
+
+Writes `tag` to `GITHUB_OUTPUT`.
+
+| Variable | Default | Description |
+|---|---|---|
+| `RELEASE_BRANCH` | `main` | Branch being released; `HEAD` must be its tip |
+| `BUMP_TYPE` | — | `patch`, `minor`, or `major` |
+| `IS_PRERELEASE` | `false` | `true` to compute an RC; omit or `false` for the stable tag |
+| `RELEASE_TAG_PREFIX` | `v` (action) / `` (script) | Literal tag namespace prefix; also prepended to the output |
+| `REQUIRE_RC_BEFORE_STABLE` | `false` | `true` to require an RC for the exact target before a stable tag |
+
+See `examples/release-from-main.yml` for a complete shallow-checkout workflow.
+
+---
+
 ### `release:check-tag-not-exists`
 
 Exits non-zero if `RELEASE_TAG` already exists. Prevents duplicate releases.
