@@ -22159,7 +22159,7 @@ var require_semver2 = __commonJS({
   }
 });
 
-// src/actions/release-compute-next-tag/index.ts
+// src/actions/release-bump-tag/index.ts
 var core = __toESM(require_core());
 
 // src/release/compute-next-tag.ts
@@ -22259,7 +22259,7 @@ if (require.main === module && !process.env.GITHUB_ACTIONS) {
   }
 }
 
-// src/actions/release-compute-next-tag/index.ts
+// src/actions/release-bump-tag/index.ts
 async function run() {
   const releaseBranch = core.getInput("release_branch") || "main";
   const bumpType = parseBumpType(core.getInput("bump_type", { required: true }));

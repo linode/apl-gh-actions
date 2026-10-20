@@ -128,7 +128,7 @@ Writes `tag` and `is_prerelease` to `GITHUB_OUTPUT`.
 
 ---
 
-### `release:compute-next-tag`
+### `release:bump-tag`
 
 Computes the next tag from `main` (or any other non-versioned branch) by applying a `patch`, `minor`, or `major` bump to the highest stable tag in the repository. Unlike `release:compute-tag`, it does not derive the release series from the branch name. Never creates or pushes tags.
 

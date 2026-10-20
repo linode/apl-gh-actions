@@ -6,7 +6,7 @@ const actions = [
   'release-create-branch',
   'release-get-next-minor-version',
   'release-get-tag',
-  'release-compute-next-tag',
+  'release-bump-tag',
   'release-prepare-chart-for-release',
   'release-tag',
   'release-create-github-release',

@@ -29,7 +29,7 @@ env:
   RELEASE_TAG_PREFIX: 'v'
 
 jobs:
-  release-compute-next-tag:
+  release-bump-tag:
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -44,7 +44,7 @@ jobs:
           fetch-tags: true
       - name: Compute next release tag
         id: compute-tag
-        uses: linode/apl-gh-actions/actions/release-compute-next-tag@main
+        uses: linode/apl-gh-actions/actions/release-bump-tag@main
         with:
           release_branch: ${{ env.RELEASE_BRANCH }}
           bump_type: ${{ inputs.bump_type }}
@@ -57,9 +57,9 @@ jobs:
     permissions:
       contents: write
     needs:
-      - release-compute-next-tag
+      - release-bump-tag
     env:
-      GIT_TAG: ${{ needs.release-compute-next-tag.outputs.release_tag }}
+      GIT_TAG: ${{ needs.release-bump-tag.outputs.release_tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
