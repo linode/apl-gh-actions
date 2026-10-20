@@ -40,15 +40,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ env.RELEASE_BRANCH }}
-          # Full history is not needed: baseline and RC selection are repository-wide and ancestry-free.
           fetch-depth: 1
-
-      # REQUIRED with a shallow checkout: actions/checkout fetches no tags by default, and fetch-tags: true
-      # only follows tags on fetched commits. The action needs every tag ref to find the highest stable tag
-      # and the highest RC, so fetch them all explicitly (depth 1 is enough — ancestry is not used).
-      - name: Fetch all tag refs
-        run: git fetch --no-tags --depth 1 origin '+refs/tags/*:refs/tags/*'
-
+          fetch-tags: true
       - name: Compute next release tag
         id: compute-tag
         uses: linode/apl-gh-actions/actions/release-compute-next-tag@main
