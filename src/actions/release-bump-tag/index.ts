@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { computeNextTag, parseBumpType } from '../../release/compute-next-tag'
+import { computeNextTag, parseBumpType } from '../../release/bump-tag'
 
 async function run() {
   const releaseBranch = core.getInput('release_branch') || 'main'

@@ -22162,7 +22162,7 @@ var require_semver2 = __commonJS({
 // src/actions/release-bump-tag/index.ts
 var core = __toESM(require_core());
 
-// src/release/compute-next-tag.ts
+// src/release/bump-tag.ts
 var import_child_process = require("child_process");
 var import_dotenv = __toESM(require_main2());
 var import_fs = require("fs");

@@ -2,14 +2,14 @@ import { execSync } from 'child_process'
 import { mkdtempSync, readFileSync, rmSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
-import { computeNextTag, runComputeNextTagFromEnv } from './compute-next-tag'
+import { computeNextTag, runComputeNextTagFromEnv } from './bump-tag'
 
 function git(cwd: string, command: string): string {
   return execSync(`git ${command}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
 }
 
 function initRepo(branch = 'main'): string {
-  const dir = mkdtempSync(join(tmpdir(), 'compute-next-tag-'))
+  const dir = mkdtempSync(join(tmpdir(), 'bump-tag-'))
   git(dir, `init -q -b ${branch}`)
   git(dir, 'config user.email test@example.com')
   git(dir, 'config user.name Test')
@@ -209,7 +209,7 @@ describe('runComputeNextTagFromEnv', () => {
       git(origin, 'checkout -q main')
       git(origin, 'commit -q --allow-empty -m "more main work"')
 
-      shallowClone = mkdtempSync(join(tmpdir(), 'compute-next-tag-clone-'))
+      shallowClone = mkdtempSync(join(tmpdir(), 'bump-tag-clone-'))
       dirs.push(origin)
       // file:// forces git to honor --depth; mirrors actions/checkout fetch-depth: 1
       execSync(`git clone -q --depth 1 --branch main "file://${origin}" .`, { cwd: shallowClone })
