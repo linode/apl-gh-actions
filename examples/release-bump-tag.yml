@@ -1,0 +1,90 @@
+name: Release From Main
+
+# Computes and publishes a release tag directly from main (or another non-versioned branch) by applying a
+# patch/minor/major bump to the highest stable tag in the repository. No versioned release branch is needed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'SemVer bump to apply to the highest stable tag'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      is_prerelease:
+        description: 'Cut an RC tag instead of a stable tag'
+        required: true
+        type: boolean
+      dry_run:
+        description: 'Skip all writes (tag and release)'
+        required: true
+        type: boolean
+
+env:
+  RELEASE_BRANCH: main
+  RELEASE_TAG_PREFIX: 'v'
+
+jobs:
+  release-bump-tag:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    outputs:
+      release_tag: ${{ steps.compute-tag.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
+          fetch-depth: 1
+          fetch-tags: true
+      - name: Compute next release tag
+        id: compute-tag
+        uses: linode/apl-gh-actions/actions/release-bump-tag@main
+        with:
+          release_branch: ${{ env.RELEASE_BRANCH }}
+          bump_type: ${{ inputs.bump_type }}
+          is_prerelease: ${{ inputs.is_prerelease }}
+          release_tag_prefix: ${{ env.RELEASE_TAG_PREFIX }}
+          require_rc_before_stable: false
+
+  release-software:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    needs:
+      - release-bump-tag
+    env:
+      GIT_TAG: ${{ needs.release-bump-tag.outputs.release_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        env:
+          ACTOR_ID: ${{ github.actor_id }}
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "${ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Create and push git tag
+        uses: linode/apl-gh-actions/actions/release-tag@main
+        with:
+          release_tag: ${{ env.GIT_TAG }}
+          dry_run: ${{ inputs.dry_run }}
+
+      - name: Create GitHub Release
+        uses: linode/apl-gh-actions/actions/release-create-github-release@main
+        with:
+          release_tag: ${{ env.GIT_TAG }}
+          is_prerelease: ${{ inputs.is_prerelease }}
+          dry_run: ${{ inputs.dry_run }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

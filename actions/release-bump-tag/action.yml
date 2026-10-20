@@ -1,0 +1,30 @@
+name: Release Bump Tag
+description: >-
+  Compute the next release tag from main or any non-versioned branch by applying a patch, minor, or major
+  bump to the highest stable tag in the repository. Never creates or pushes tags.
+inputs:
+  release_branch:
+    description: Branch being released. HEAD must be the tip of this branch (detached HEAD is fine).
+    required: false
+    default: main
+  bump_type:
+    description: SemVer bump to apply to the highest stable tag. One of patch, minor, major.
+    required: true
+  is_prerelease:
+    description: Set true to compute the next RC tag for the bumped target, false for the stable tag.
+    required: false
+    default: 'false'
+  release_tag_prefix:
+    description: Literal prefix that selects the tag namespace and is prepended to the output. Pass '' for unprefixed tags.
+    required: false
+    default: v
+  require_rc_before_stable:
+    description: Set true to require an existing RC tag for the exact bumped target before computing a stable tag.
+    required: false
+    default: 'false'
+outputs:
+  tag:
+    description: Computed release tag.
+runs:
+  using: node24
+  main: dist/index.js
